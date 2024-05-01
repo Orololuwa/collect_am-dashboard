@@ -23,7 +23,7 @@ class AuthService {
 
   async login(
     body: LoginRequestBody
-  ): Promise<AxiosResponse<LoginResponseData>> {
+  ): Promise<AxiosResponse<{ data: LoginResponseData; message: string }>> {
     return new Promise(async (resolve, reject) => {
       try {
         const response = await authInstance.post(LOGIN, body);

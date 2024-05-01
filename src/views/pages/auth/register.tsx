@@ -2,15 +2,17 @@ import { Button } from "views/components/button";
 import Helmet from "views/components/helmet";
 import InputAuth from "views/components/input/InputAuth";
 import Link from "views/components/link";
-import { Link as HomeLink } from "react-router-dom";
+import { Link as HomeLink, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useRef, useState } from "react";
-import authService from "data/services/auth-service";
+import authService from "data/services/auth.service";
 import { RegisterBody } from "app/store/models/auth";
 import { emailValidation, passwordValidation } from "app/utils";
 import Loading from "views/components/loading";
 
 const Register = (): JSX.Element => {
+  const navigate = useNavigate();
+
   const firstnameRef = useRef<HTMLInputElement>(null);
   const lastnameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -21,11 +23,9 @@ const Register = (): JSX.Element => {
   const [loading, setLoading] = useState(false);
 
   const [state, setState] = useState<RegisterBody>({
-    account_type: "main",
-    user_type: "biller",
     email: "",
-    firstname: "",
-    lastname: "",
+    firstName: "",
+    lastName: "",
     password: "",
     phone: ""
   });
@@ -58,13 +58,13 @@ const Register = (): JSX.Element => {
   const register = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!state.firstname) {
+    if (!state.firstName) {
       firstnameRef.current?.focus();
       if (firstnameRef.current) {
         firstnameRef.current.style.border = "2px solid red";
       }
       return;
-    } else if (!state.lastname) {
+    } else if (!state.lastName) {
       lastnameRef.current?.focus();
       if (lastnameRef.current) {
         lastnameRef.current.style.border = "2px solid red";
@@ -101,15 +101,11 @@ const Register = (): JSX.Element => {
     try {
       const res = await authService.register(state);
       setLoading(false);
-      if (res.status === 200) {
-        toast.success(
-          "Registration Successful. Please check your inbox for an activation link.",
-          {
-            position: "top-right",
-            duration: 500000
-          }
-        );
-      }
+      toast.success(res.data.message, {
+        position: "top-right",
+        duration: 500000
+      });
+      navigate("/login");
     } catch (error: any) {
       setLoading(false);
       if (error.response) {
@@ -174,16 +170,16 @@ const Register = (): JSX.Element => {
                 <div>
                   <label
                     className="font-semibold text-sm pl-2"
-                    htmlFor="firstname"
+                    htmlFor="firstName"
                   >
                     First Name
                   </label>
                   <InputAuth
                     type="text"
-                    id="firstname"
-                    name="firstname"
+                    id="firstName"
+                    name="firstName"
                     onChange={handleForm}
-                    value={state.firstname}
+                    value={state.firstName}
                     ref={firstnameRef}
                   />
                 </div>
@@ -195,11 +191,11 @@ const Register = (): JSX.Element => {
                     Last Name
                   </label>
                   <InputAuth
-                    type="lastname"
-                    id="lastname"
-                    name="lastname"
+                    type="lastName"
+                    id="lastName"
+                    name="lastName"
                     onChange={handleForm}
-                    value={state.lastname}
+                    value={state.lastName}
                     ref={lastnameRef}
                   />
                 </div>

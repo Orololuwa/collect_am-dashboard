@@ -1,8 +1,8 @@
 import axios, { AxiosRequestHeaders } from "axios";
 import ExpirySession from "app/utils/expirysession";
 
-export const API_VERSION = "v1";
-export const BASE_URL = `${process.env.REACT_APP_BASE_URL}/api/${API_VERSION}`;
+// export const API_VERSION = "v1";
+export const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 axios.defaults.baseURL = BASE_URL;
 
 //AuthService or Public Calls

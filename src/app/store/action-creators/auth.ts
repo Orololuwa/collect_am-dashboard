@@ -9,9 +9,9 @@ import {
 } from "../slices/auth";
 import { NavigateFunction } from "react-router-dom";
 import { LoginRequestBody } from "../models/auth";
-// import authService from "data/services/auth-service";
 import toast from "react-hot-toast";
 import ExpirySession from "app/utils/expirysession";
+import authService from "data/services/auth.service";
 
 export const login = (
   navigate: NavigateFunction,
@@ -23,13 +23,16 @@ export const login = (
     try {
       const expirationInSeconds = rememberMe ? 86400 : 1800;
       dispatch(loginBegin());
-      // const res = await authService.login(body);
-      console.log(body);
+      const res = await authService.login(body);
 
       // if (res.status === 200) {
       dispatch(loginSuccess(true));
       navigate(from, { replace: true });
-      ExpirySession.set("access_token", "access_token", expirationInSeconds);
+      ExpirySession.set(
+        "access_token",
+        res.data.data.token,
+        expirationInSeconds
+      );
       // }
     } catch (error: any) {
       dispatch(loginError());

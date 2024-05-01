@@ -1,5 +1,5 @@
 // Auth
 
-export const LOGIN = `/login`;
-export const REGISTER = "/register";
+export const LOGIN = `/auth/login`;
+export const REGISTER = "/auth/signup";
 export const LOGOUT = `/logout`;
