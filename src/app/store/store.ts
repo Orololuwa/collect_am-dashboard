@@ -13,6 +13,7 @@ import storage from "redux-persist/lib/storage";
 
 import auth from "./slices/auth";
 import UI from "./slices/ui";
+import business from "./slices/business";
 import invoices from "./slices/invoices";
 import products from "./slices/products";
 import receipts from "./slices/receipts";
@@ -21,6 +22,7 @@ import reports from "./slices/reports";
 
 const rootReducer = combineReducers({
   auth,
+  business,
   UI,
   invoices,
   products,
