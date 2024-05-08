@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import Pagination from "views/components/pagination";
 import Loading from "views/components/loading";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { fetchReports } from "app/store";
+import { fetchReports } from "data/store";
 import Err from "views/components/error";
 import usePageInfo from "app/hooks/usePageInfo";
 import Helmet from "views/components/helmet";

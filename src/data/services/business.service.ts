@@ -1,4 +1,4 @@
-import { IGetBusiness } from "app/store/models/business";
+import { IGetBusiness } from "data/store/models/business";
 import { userInstance } from "data/axios-setup";
 
 class BusinessService {

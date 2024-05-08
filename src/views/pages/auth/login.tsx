@@ -3,10 +3,10 @@ import InputAuth from "views/components/input/InputAuth";
 import Link from "views/components/link";
 import { Link as HomeLink, useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { login } from "app/store";
+import { login } from "data/store";
 import Helmet from "views/components/helmet";
 import { useRef, useState } from "react";
-import { LoginRequestBody } from "app/store/models/auth";
+import { LoginRequestBody } from "data/store/models/auth";
 import { emailValidation, passwordValidation } from "app/utils";
 
 interface LocationState {

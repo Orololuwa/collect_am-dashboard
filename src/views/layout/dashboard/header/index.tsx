@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState } from "react";
 import { IoMenuOutline } from "react-icons/io5";
-import { toggleSideBar } from "app/store";
+import { toggleSideBar } from "data/store";
 import Drawer from "views/components/drawer";
 import { useAppDispatch } from "app/hooks";
 import InputBlock from "views/components/input/inputBlock";

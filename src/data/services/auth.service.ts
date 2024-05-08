@@ -2,7 +2,7 @@ import {
   LoginRequestBody,
   LoginResponseData,
   RegisterBody
-} from "app/store/models/auth";
+} from "data/store/models/auth";
 import { AxiosResponse } from "axios";
 import { LOGIN, LOGOUT, REGISTER } from "data/apis";
 import { authInstance, userInstance } from "data/axios-setup";

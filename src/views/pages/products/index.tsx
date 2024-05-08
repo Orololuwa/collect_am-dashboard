@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import Pagination from "views/components/pagination";
 import Loading from "views/components/loading";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { fetchProducts } from "app/store";
+import { fetchProducts } from "data/store";
 import Err from "views/components/error";
 import { IoAddOutline, IoTrashBinOutline } from "react-icons/io5";
 import usePageInfo from "app/hooks/usePageInfo";

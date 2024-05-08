@@ -12,7 +12,7 @@ import {
   IoSpeedometer
 } from "react-icons/io5";
 import Tooltip from "views/components/tooltip";
-import { logOut } from "app/store";
+import { logOut } from "data/store";
 import { faker } from "@faker-js/faker";
 
 const SideBar = (): JSX.Element => {

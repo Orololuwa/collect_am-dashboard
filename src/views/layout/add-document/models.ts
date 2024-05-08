@@ -1,4 +1,4 @@
-import { ProductData } from "app/store/slices/products";
+import { ProductData } from "data/store/slices/products";
 
 export interface ProductDataProps extends ProductData {
   quantity: number;

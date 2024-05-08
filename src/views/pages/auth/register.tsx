@@ -6,7 +6,7 @@ import { Link as HomeLink, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useRef, useState } from "react";
 import authService from "data/services/auth.service";
-import { RegisterBody } from "app/store/models/auth";
+import { RegisterBody } from "data/store/models/auth";
 import { emailValidation, passwordValidation } from "app/utils";
 import Loading from "views/components/loading";
 
