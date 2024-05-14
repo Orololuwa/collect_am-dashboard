@@ -14,7 +14,7 @@ export const fetchInvoices = () => {
       setTimeout(() => {
         const data: InvoiceData[] = Array.from({ length: 47 }, () => ({
           invoiceNo: faker.vehicle.vrm(),
-          customerName: faker.name.findName(),
+          customerName: faker.person.fullName(),
           customerEmail: faker.internet.email(),
           amount: +faker.finance.amount(5000, 1000000),
           dueDate: faker.date.future(),

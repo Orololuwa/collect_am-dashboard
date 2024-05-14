@@ -2,7 +2,7 @@ import { Navigate, useLocation } from "react-router";
 import { useAppSelector } from "app/hooks";
 import ExpirySession from "app/utils/expirysession";
 
-const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+const AuthGuard = ({ children }: { children: JSX.Element }) => {
   let isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
   let location = useLocation();
   ExpirySession.get("access_token");
@@ -18,4 +18,4 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   return children;
 };
 
-export default PrivateRoute;
+export default AuthGuard;

@@ -13,6 +13,8 @@ import theme from "app/theme";
 import Loading from "views/components/loading";
 import { ToastProvider } from "react-toast-notifications";
 import { Toaster } from "react-hot-toast";
+import { ChakraBaseProvider } from "@chakra-ui/react";
+import chakaraTheme from "app/theme/chakra-theme";
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
@@ -20,17 +22,19 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <PersistGate loading={<Loading />} persistor={persistor}>
-            <ToastProvider placement="bottom-center" autoDismiss>
-              <GlobalStyles />
-              <App />
-              <Toaster />
-            </ToastProvider>
-          </PersistGate>
-        </BrowserRouter>
-      </ThemeProvider>
+      <ChakraBaseProvider theme={chakaraTheme}>
+        <ThemeProvider theme={theme}>
+          <BrowserRouter>
+            <PersistGate loading={<Loading />} persistor={persistor}>
+              <ToastProvider placement="bottom-center" autoDismiss>
+                <GlobalStyles />
+                <App />
+                <Toaster />
+              </ToastProvider>
+            </PersistGate>
+          </BrowserRouter>
+        </ThemeProvider>
+      </ChakraBaseProvider>
     </Provider>
   </React.StrictMode>
 );

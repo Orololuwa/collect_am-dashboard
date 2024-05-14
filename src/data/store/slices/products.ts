@@ -1,4 +1,3 @@
-import { RecordKey } from "@faker-js/faker/modules/unique/unique";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface ProductData {
@@ -6,7 +5,7 @@ export interface ProductData {
   title: string;
   description: string;
   price: number;
-  id: RecordKey;
+  id: any;
 }
 
 interface ProductsState {

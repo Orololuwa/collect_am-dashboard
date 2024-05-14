@@ -17,7 +17,7 @@ export const fetchReceipts = () => {
           amount: +faker.finance.amount(5000, 1000000),
           firstName: faker.name.firstName(),
           customerEmail: faker.internet.email(),
-          phone: faker.phone.phoneNumber("+(234) 80# ### ####")
+          phone: faker.phone.number("+(234) 80# ### ####")
         }));
         dispatch(receiptsFetchingSuccess(data));
       }, 1000);

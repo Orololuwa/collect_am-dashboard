@@ -17,7 +17,7 @@ export const fetchProducts = () => {
           title: faker.commerce.productName(),
           description: faker.commerce.productDescription(),
           price: +faker.finance.amount(5000, 1000000, 2),
-          id: faker.unique(faker.name.firstName)
+          id: faker.helpers.unique(faker.person.firstName)
         }));
         dispatch(productsFetchingSuccess(data));
       }, 1000);

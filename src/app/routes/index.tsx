@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import { Navigate, RouteObject } from "react-router-dom";
-import PrivateRoute from "./private-route";
+import AuthGuard from "./auth.guard";
+import BusinessGuard from "./businesss.guard";
 
 import LayoutDashboard from "views/layout/dashboard";
 import NotFound from "views/components/notFound";
@@ -48,9 +49,11 @@ const routes: RouteObject[] = [
   },
   {
     element: (
-      <PrivateRoute>
-        <LayoutDashboard />
-      </PrivateRoute>
+      <AuthGuard>
+        <BusinessGuard>
+          <LayoutDashboard />
+        </BusinessGuard>
+      </AuthGuard>
     ),
     children: [
       {

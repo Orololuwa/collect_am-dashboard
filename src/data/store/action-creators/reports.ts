@@ -14,7 +14,7 @@ export const fetchReports = () => {
       setTimeout(() => {
         const data: ReportData[] = Array.from({ length: 47 }, () => ({
           documentNo: faker.vehicle.vrm(),
-          customerName: faker.name.findName(),
+          customerName: faker.name.fullName(),
           customerEmail: faker.internet.email(),
           amount: +faker.finance.amount(5000, 1000000),
           dueDate: faker.date.future(),

@@ -13,6 +13,7 @@ const BusinessSlice = createSlice({
   reducers: {
     GetBusinessBegin: (state: IBusinessState) => {
       state.loading = true;
+      state.error = false;
     },
     GetBusinessSuccess: (
       state: IBusinessState,
@@ -23,6 +24,8 @@ const BusinessSlice = createSlice({
       state.error = false;
     },
     GetBusinessError: (state: IBusinessState) => {
+      state.loading = false;
+      state.data = null;
       state.error = true;
     }
   }

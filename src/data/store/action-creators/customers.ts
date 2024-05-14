@@ -17,7 +17,7 @@ export const fetchcustomers = () => {
           firstName: faker.name.firstName(),
           lastName: faker.name.firstName(),
           customerEmail: faker.internet.email(),
-          phone: faker.phone.phoneNumber("+(234) 80# ### ####")
+          phone: faker.phone.number("+(234) 80# ### ####")
         }));
         dispatch(customersFetchingSuccess(data));
       }, 1000);
