@@ -70,7 +70,7 @@ const Select = forwardRef<Props, "select">(
             mt={0}
             fontSize={14}
             display="block"
-            color="#515151"
+            color="red"
             lineHeight="28px"
             data-cy="select-form-helper-text"
           >

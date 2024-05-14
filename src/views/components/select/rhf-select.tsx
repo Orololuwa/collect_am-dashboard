@@ -19,7 +19,8 @@ const RhfSelect = ({
   isSearchable,
   defaultValue,
   maxMenuHeight,
-  getOptionValue
+  getOptionValue,
+  ...props
 }: RhfSelectProps) => {
   let field: ControllerRenderProps<FieldValues, string> | undefined;
 
@@ -42,6 +43,7 @@ const RhfSelect = ({
       value={value || field?.value}
       getOptionValue={getOptionValue}
       onChange={(o) => field?.onChange(o?.value)}
+      {...props}
     />
   );
 };
