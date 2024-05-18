@@ -56,11 +56,12 @@ export const login = (
   };
 };
 
-export const logOut = () => {
+export const logOut = (navigate: NavigateFunction) => {
   return async (dispatch: Dispatch) => {
     try {
       dispatch(logoutBegin());
       dispatch(logoutSuccess(false));
+      navigate("/login", { replace: true });
     } catch (err) {
       dispatch(logoutError());
     }

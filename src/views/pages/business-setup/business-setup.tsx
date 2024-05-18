@@ -5,6 +5,7 @@ import { useReducer } from "react";
 import BusinessInfo from "./forms/business-info";
 import {
   Box,
+  Flex,
   Grid,
   GridItem,
   Heading,
@@ -16,8 +17,10 @@ import {
   StepSeparator,
   StepStatus,
   StepTitle,
-  Stepper
+  Stepper,
+  Text
 } from "@chakra-ui/react";
+import { useLogoutFunction } from "app/hooks/use-logout";
 
 interface ReducerState {
   step: number;
@@ -32,6 +35,10 @@ enum ActionTypes {
 }
 
 const BusinessSetup = (): JSX.Element => {
+  //
+  const { logoutHandler } = useLogoutFunction();
+
+  //
   const initialState: ReducerState = {
     step: 0
   };
@@ -82,7 +89,16 @@ const BusinessSetup = (): JSX.Element => {
       title: "Business Info",
       description: "Business Info",
       stepIndicator: <div>i</div>,
-      formComponent: <BusinessInfo />
+      formComponent: (
+        <BusinessInfo
+          onNext={() =>
+            dispatchReducer({
+              type: ActionTypes.STEP_JUMP,
+              payload: 1
+            })
+          }
+        />
+      )
     },
     {
       title: "Business Address",
@@ -129,8 +145,25 @@ const BusinessSetup = (): JSX.Element => {
           <h6>&copy;Copyright 2022. Made by CollectAm</h6>
         </GridItem>
         <GridItem className="p-4 h-full basis-1/2 md:p-8 md:basis-full grow">
-          <Heading fontSize={"2xl"} pb="5">
+          <Heading
+            fontSize={"2xl"}
+            pb="5"
+            as={Flex}
+            justifyContent={"space-between"}
+          >
             Business Setup
+            <Text
+              color={"red"}
+              fontSize={"small"}
+              fontWeight={"400"}
+              cursor={"pointer"}
+              _hover={{
+                textDecoration: "underline"
+              }}
+              onClick={logoutHandler}
+            >
+              Logout
+            </Text>
           </Heading>
           <Stepper size="md" index={state.step} colorScheme="primary">
             {steps.map((step, index) => (

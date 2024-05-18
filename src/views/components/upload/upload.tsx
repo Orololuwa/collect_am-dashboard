@@ -145,7 +145,9 @@ const Upload = ({
           <div className="mt-3">
             <div className="flex items-center justify-between p-3 bg-gray-200 rounded-md overflow-x-hidden">
               <a href={value!} target="_blank" className="cursor-pointer">
-                <p className="text-gray-900">{resState?.original_filename}</p>
+                <p className="text-gray-900">
+                  {resState?.original_filename || title}
+                </p>
               </a>
             </div>
           </div>

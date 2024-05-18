@@ -16,14 +16,12 @@ import RhfSelect from "views/components/select/rhf-select";
 import { Option } from "views/components/dropdown";
 import Upload from "views/components/upload/upload";
 import { useState } from "react";
-
-interface ISchema {
-  name: string;
-  email: string;
-  description: string;
-  sector: string;
-  bvn: string;
-}
+import { useAppDispatch, useAppSelector } from "app/hooks";
+import { AxiosError } from "axios";
+import toast from "react-hot-toast";
+import { DEFAULT_ERROR_MESSAGE } from "data/config";
+import businessService from "data/services/business.service";
+import { fetchBusiness } from "data/store/action-creators/business";
 
 const schema = yup.object({
   name: yup.string().min(3).required(),
@@ -33,13 +31,7 @@ const schema = yup.object({
   bvn: yup.string().min(9).required()
 });
 
-const defaultValues: ISchema = {
-  name: "",
-  email: "",
-  bvn: "",
-  description: "",
-  sector: ""
-};
+type ISchema = yup.InferType<typeof schema>;
 
 const sectorOptions: Option[] = [
   { value: "technology", label: "Technology" },
@@ -68,30 +60,45 @@ let docSchema = yup.object({
 
 type Doc = yup.InferType<typeof docSchema>;
 
-export default function BusinessInfo() {
+export type CreateOrUpdateBusinessBody = ISchema &
+  Doc & { isCorporateAffair: string };
+
+export default function BusinessInfo({ onNext }: { onNext: () => void }) {
+  //
+  const business = useAppSelector((state) => state.business.data);
+  const dispatch = useAppDispatch();
+
+  const defaultValues: ISchema = business
+    ? {
+        name: business.name,
+        email: business.email,
+        bvn: business.kyc.bvn,
+        description: business.description,
+        sector: business.sector
+      }
+    : {
+        name: "",
+        email: "",
+        bvn: "",
+        description: "",
+        sector: ""
+      };
+
   // rhf form
   const rhf = useForm<ISchema>({
     defaultValues,
-    mode: "all",
+    mode: "onChange",
     resolver: yupResolver(schema)
   });
 
   const sector = rhf.watch("sector");
 
-  const onSubmit: SubmitHandler<ISchema> = async (data) => {
-    try {
-      const { error, data: docData } = await validateDocuments();
-      if (error) return;
-      console.log({ ...data, ...docData });
-    } catch (error) {}
-  };
-
-  // form state
+  // form and error state
   const [state, setState] = useState<Doc & { isCorporateAffair: boolean }>({
-    logo: "",
-    certificateOfRegistration: "",
-    proof_of_address: "jdfl",
-    isCorporateAffair: false
+    logo: business?.logo || "",
+    certificateOfRegistration: business?.kyc?.certificate_of_registration || "",
+    proof_of_address: business?.kyc?.proof_of_address || "",
+    isCorporateAffair: !!business?.is_corporate_affairs
   });
 
   const [errors, setErrors] = useState<Doc>({
@@ -100,6 +107,21 @@ export default function BusinessInfo() {
     proof_of_address: ""
   });
 
+  //   input change handlers
+  const onImageUploadHandler = (key: string, image: string) => {
+    setState((prevState) => ({ ...prevState, [key]: image }));
+  };
+
+  const onImageRemoveHandler = (key: string, image: string) => {
+    setState((prevState) => ({ ...prevState, [key]: image }));
+  };
+
+  const onCheckedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setState((prevState) => ({ ...prevState, [name]: checked }));
+  };
+
+  // validation and submission
   const validateDocuments = async () => {
     try {
       Object.keys(errors).map((key) => {
@@ -127,17 +149,40 @@ export default function BusinessInfo() {
     }
   };
 
-  const onImageUploadHandler = (key: string, image: string) => {
-    setState((prevState) => ({ ...prevState, [key]: image }));
-  };
+  const [loading, setLoading] = useState(false);
 
-  const onImageRemoveHandler = (key: string, image: string) => {
-    setState((prevState) => ({ ...prevState, [key]: image }));
-  };
+  const onSubmit: SubmitHandler<ISchema> = async (data) => {
+    try {
+      setLoading(true);
+      const { error, data: docData } = await validateDocuments();
+      if (error || !docData) return;
 
-  const onCheckedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setState((prevState) => ({ ...prevState, [name]: checked }));
+      let message: string;
+      const body = {
+        ...docData,
+        ...data,
+        isCorporateAffair: `${state.isCorporateAffair}`
+      };
+
+      if (business) {
+        console.log("@update");
+        const res = await businessService.updateBusiness(body);
+        message = res.message;
+      } else {
+        console.log("@create");
+        const res = await businessService.createBusiness(body);
+        message = res.message;
+      }
+      toast.success(message);
+      dispatch(fetchBusiness());
+      setLoading(false);
+      onNext();
+    } catch (err) {
+      const axiosError = err as AxiosError<{ message: string }>;
+      const msg = axiosError.response?.data?.message || DEFAULT_ERROR_MESSAGE;
+      toast.error(msg);
+      setLoading(false);
+    }
   };
 
   return (
@@ -264,6 +309,7 @@ export default function BusinessInfo() {
           height={[12, 14]}
           colorScheme="primary"
           onClick={rhf.handleSubmit(onSubmit)}
+          isLoading={loading}
         >
           Next
         </Button>

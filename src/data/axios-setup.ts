@@ -49,19 +49,19 @@ userInstance.interceptors.request.use(async (config) => {
 userInstance.interceptors.response.use(
   (response) => response,
   (error: any) => {
-    /**
-     * Do something in case the response returns an error code [3**, 4**, 5**] etc
-     * For example, on token expiration retrieve a new access token, retry a failed request etc
-     */
-    // const { response } = error;
-    // const originalRequest = error.config;
-    // if (response) {
-    //   if (response.status === 500) {
-    //     // do something here
-    //   } else {
-    //     return originalRequest;
-    //   }
-    // }
+    const { response } = error;
+
+    if (!response) {
+      console.log("Internet connection is slow");
+    }
+
+    if (response && response.status === 403) {
+      return (window.location.href = "/forbidden");
+    }
+
+    if (response && response.status === 401) {
+      return window.location.reload();
+    }
     return Promise.reject(error);
   }
 );

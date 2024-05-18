@@ -1,6 +1,6 @@
 import AsideWrapper from "./styled";
 import Link from "views/components/link";
-import { Link as HomeLink } from "react-router-dom";
+import { Link as HomeLink, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { FaFileInvoice, FaPowerOff } from "react-icons/fa";
 import {
@@ -17,11 +17,12 @@ import { faker } from "@faker-js/faker";
 
 const SideBar = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const isShow = useAppSelector((state) => state.UI.isDesktopOpen);
 
   const logoutHandler = () => {
-    dispatch(logOut());
+    dispatch(logOut(navigate));
   };
 
   return (
