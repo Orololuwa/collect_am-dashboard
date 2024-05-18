@@ -60,6 +60,14 @@ const sectorOptions: Option[] = [
   // Add more options here
 ];
 
+let docSchema = yup.object({
+  logo: yup.string().url().required(),
+  certificateOfRegistration: yup.string().url().required(),
+  proof_of_address: yup.string().url().required()
+});
+
+type Doc = yup.InferType<typeof docSchema>;
+
 export default function BusinessInfo() {
   // rhf form
   const rhf = useForm<ISchema>({
@@ -70,18 +78,54 @@ export default function BusinessInfo() {
 
   const sector = rhf.watch("sector");
 
-  const onSubmit: SubmitHandler<ISchema> = (data) => {
-    alert("@test");
-    console.log({ ...data, ...state });
+  const onSubmit: SubmitHandler<ISchema> = async (data) => {
+    try {
+      const { error, data: docData } = await validateDocuments();
+      if (error) return;
+      console.log({ ...data, ...docData });
+    } catch (error) {}
   };
 
   // form state
-  const [state, setState] = useState({
+  const [state, setState] = useState<Doc & { isCorporateAffair: boolean }>({
     logo: "",
     certificateOfRegistration: "",
-    proof_of_address: "",
+    proof_of_address: "jdfl",
     isCorporateAffair: false
   });
+
+  const [errors, setErrors] = useState<Doc>({
+    logo: "",
+    certificateOfRegistration: "",
+    proof_of_address: ""
+  });
+
+  const validateDocuments = async () => {
+    try {
+      Object.keys(errors).map((key) => {
+        setErrors((prev) => ({
+          ...prev,
+          [key]: ""
+        }));
+      });
+
+      const parsedDoc = await docSchema.validate(state, {
+        strict: true,
+        abortEarly: false
+      });
+
+      return { error: false, data: parsedDoc };
+    } catch (error) {
+      const err = error as yup.ValidationError;
+      err.inner.map((innerErr) => {
+        setErrors((prev) => ({
+          ...prev,
+          [innerErr.path as string]: innerErr.message
+        }));
+      });
+      return { error: true };
+    }
+  };
 
   const onImageUploadHandler = (key: string, image: string) => {
     setState((prevState) => ({ ...prevState, [key]: image }));
@@ -190,6 +234,7 @@ export default function BusinessInfo() {
             value={state.logo}
             onCurrentImageChange={onImageUploadHandler}
             handleRemove={onImageRemoveHandler}
+            error={errors.logo}
           />
         </Box>
 
@@ -200,6 +245,7 @@ export default function BusinessInfo() {
             value={state.certificateOfRegistration}
             onCurrentImageChange={onImageUploadHandler}
             handleRemove={onImageRemoveHandler}
+            error={errors.certificateOfRegistration}
           />
         </Box>
 
@@ -210,6 +256,7 @@ export default function BusinessInfo() {
             value={state.proof_of_address}
             onCurrentImageChange={onImageUploadHandler}
             handleRemove={onImageRemoveHandler}
+            error={errors.proof_of_address}
           />
         </Box>
 

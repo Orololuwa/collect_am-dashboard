@@ -1,6 +1,8 @@
 import {
   Box,
   Center,
+  FormControl,
+  FormHelperText,
   FormLabel,
   Icon,
   Input,
@@ -21,6 +23,7 @@ interface IUpload {
   onCurrentImageChange: (key: string, image: string) => void;
   title: string;
   handleRemove: (key: string, image: string) => void;
+  error?: string;
 }
 
 const Upload = ({
@@ -28,7 +31,8 @@ const Upload = ({
   title,
   value,
   onCurrentImageChange,
-  handleRemove
+  handleRemove,
+  error
 }: IUpload) => {
   const [isLoading, setLoading] = useState(false);
   const [inputKey, setInputKey] = useState(0);
@@ -73,89 +77,106 @@ const Upload = ({
 
   return (
     <Box gap={"5"}>
-      <Show iff={!value}>
-        <Stack flexGrow={"1"}>
-          <Box flexBasis="60%">
-            <Center w="full" h="full">
-              <FormLabel
-                px="2"
-                py="5"
-                m="0"
-                w="full"
-                display="flex"
-                cursor="pointer"
-                fontSize={"sm"}
-                alignItems="center"
-                justifyContent={"center"}
-                borderRadius="6"
-                borderWidth={"2px"}
-                borderColor={useColorModeValue("gray.200", "whiteAlpha.300")}
-                borderStyle={"dashed"}
-                _disabled={{ bgColor: "gray.200" }}
-                htmlFor={uploadKey}
-                textAlign={"center"}
-                overflow="clip"
-                position={"relative"}
-              >
-                <Stack spacing={"2"} alignItems="center">
-                  <Text fontWeight={"bold"}>{title}</Text>
-                  <Icon as={ExportCurve} color="primary.500" boxSize={"5"} />
-                  <Text>Tap to upload document</Text>
-                </Stack>
-                {
-                  // loadingUpload ||
-                  isLoading ? (
-                    <Progress
-                      size="xs"
-                      isIndeterminate
-                      w="full"
-                      position={"absolute"}
-                      bottom="0"
-                      left="0"
-                      hasStripe
-                      colorScheme={"primary"}
-                    />
-                  ) : null
-                }
-              </FormLabel>
-              <Input
-                type="file"
-                display="none"
-                id={uploadKey}
-                name="user-profile"
-                colorScheme="primary"
-                accept="image/png, image/jpeg, application/pdf"
-                multiple
-                onChange={handleFileChange}
-                key={inputKey}
+      <FormControl>
+        <Show iff={!value}>
+          <Stack flexGrow={"1"}>
+            <Box flexBasis="60%">
+              <Center w="full" h="full">
+                <FormLabel
+                  px="2"
+                  py="5"
+                  m="0"
+                  w="full"
+                  display="flex"
+                  cursor="pointer"
+                  fontSize={"sm"}
+                  alignItems="center"
+                  justifyContent={"center"}
+                  borderRadius="6"
+                  borderWidth={"2px"}
+                  borderColor={useColorModeValue("gray.200", "whiteAlpha.300")}
+                  borderStyle={"dashed"}
+                  _disabled={{ bgColor: "gray.200" }}
+                  htmlFor={uploadKey}
+                  textAlign={"center"}
+                  overflow="clip"
+                  position={"relative"}
+                >
+                  <Stack spacing={"2"} alignItems="center">
+                    <Text fontWeight={"bold"}>{title}</Text>
+                    <Icon as={ExportCurve} color="primary.500" boxSize={"5"} />
+                    <Text>Tap to upload document</Text>
+                  </Stack>
+                  {
+                    // loadingUpload ||
+                    isLoading ? (
+                      <Progress
+                        size="xs"
+                        isIndeterminate
+                        w="full"
+                        position={"absolute"}
+                        bottom="0"
+                        left="0"
+                        hasStripe
+                        colorScheme={"primary"}
+                      />
+                    ) : null
+                  }
+                </FormLabel>
+                <Input
+                  type="file"
+                  display="none"
+                  id={uploadKey}
+                  name="user-profile"
+                  colorScheme="primary"
+                  accept="image/png, image/jpeg, application/pdf"
+                  multiple
+                  onChange={handleFileChange}
+                  key={inputKey}
+                />
+              </Center>
+            </Box>
+            <Text fontSize={"xs"} fontStyle="italic">
+              Accepted formats are jpeg, png and pdf.
+            </Text>
+          </Stack>
+        </Show>
+        <Show iff={!!value}>
+          <div className="mt-3">
+            <div className="flex items-center justify-between p-3 bg-gray-200 rounded-md overflow-x-hidden">
+              <a href={value!} target="_blank" className="cursor-pointer">
+                <p className="text-gray-900">{resState?.original_filename}</p>
+              </a>
+            </div>
+          </div>
+
+          <div className="flex justify-end mt-3">
+            <div
+              onClick={() => handleRemove(uploadKey, "")}
+              className="flex items-center cursor-pointer"
+            >
+              <p className="mr-1 text-sm text-primary-900">Remove file</p>
+              <CloseCircle
+                size="18"
+                color="#212327"
+                className="cursor-pointer"
               />
-            </Center>
-          </Box>
-          <Text fontSize={"xs"} fontStyle="italic">
-            Accepted formats are jpeg, png and pdf.
-          </Text>
-        </Stack>
-      </Show>
-
-      <Show iff={!!value}>
-        <div className="mt-3">
-          <div className="flex items-center justify-between p-3 bg-gray-200 rounded-md overflow-x-hidden">
-            <a href={value!} target="_blank" className="cursor-pointer">
-              <p className="text-gray-900">{resState?.original_filename}</p>
-            </a>
+            </div>
           </div>
-        </div>
-
-        <div className="flex justify-end mt-3">
-          <div
-            onClick={() => handleRemove(uploadKey, "")}
-            className="flex items-center cursor-pointer"
+        </Show>
+        <Show iff={error}>
+          <FormHelperText
+            mt={0}
+            fontSize={14}
+            display="block"
+            color="red"
+            lineHeight="28px"
+            data-cy="select-form-helper-text"
           >
-            <p className="mr-1 text-sm text-primary-900">Remove file</p>
-            <CloseCircle size="18" color="#212327" className="cursor-pointer" />
-          </div>
-        </div>
-      </Show>
+            {error}
+          </FormHelperText>
+        </Show>{" "}
+      </FormControl>
     </Box>
   );
 };
