@@ -4,7 +4,7 @@ import {
   RegisterBody
 } from "data/store/models/auth";
 import { AxiosResponse } from "axios";
-import { LOGIN, LOGOUT, REGISTER } from "data/apis";
+import { LOGIN, LOGOUT, REGISTER, v1 } from "data/apis";
 import { authInstance, userInstance } from "data/axios-setup";
 
 class AuthService {
@@ -13,7 +13,7 @@ class AuthService {
   ): Promise<AxiosResponse<{ message: string }>> {
     return new Promise(async (resolve, reject) => {
       try {
-        const response = await authInstance.post(REGISTER, body);
+        const response = await authInstance.post(`api/${v1}/${REGISTER}`, body);
         resolve(response);
       } catch (error: any) {
         reject(error);
@@ -26,7 +26,7 @@ class AuthService {
   ): Promise<AxiosResponse<{ data: LoginResponseData; message: string }>> {
     return new Promise(async (resolve, reject) => {
       try {
-        const response = await authInstance.post(LOGIN, body);
+        const response = await authInstance.post(`api/${v1}/${LOGIN}`, body);
         resolve(response);
       } catch (error: any) {
         reject(error);
@@ -37,7 +37,7 @@ class AuthService {
   async logout(): Promise<AxiosResponse<LoginResponseData>> {
     return new Promise(async (resolve, reject) => {
       try {
-        const response = await userInstance.post(LOGOUT);
+        const response = await userInstance.post(`api/${v1}/${LOGOUT}`);
         resolve(response);
       } catch (error: any) {
         reject(error);

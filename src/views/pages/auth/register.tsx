@@ -102,8 +102,7 @@ const Register = (): JSX.Element => {
       const res = await authService.register(state);
       setLoading(false);
       toast.success(res.data.message, {
-        position: "top-right",
-        duration: 500000
+        position: "top-right"
       });
       navigate("/login");
     } catch (error: any) {
