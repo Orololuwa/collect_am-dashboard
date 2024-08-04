@@ -96,9 +96,9 @@ export default function BusinessInfo({ onNext }: { onNext: () => void }) {
   // form and error state
   const [state, setState] = useState<Doc & { isCorporateAffair: boolean }>({
     logo: business?.logo || "",
-    certificateOfRegistration: business?.kyc?.certificate_of_registration || "",
-    proof_of_address: business?.kyc?.proof_of_address || "",
-    isCorporateAffair: !!business?.is_corporate_affairs
+    certificateOfRegistration: business?.kyc?.certificateOfRegistration || "",
+    proof_of_address: business?.kyc?.proofOfAddress || "",
+    isCorporateAffair: !!business?.isCorporateAffair
   });
 
   const [errors, setErrors] = useState<Doc>({

@@ -10,8 +10,8 @@ export interface IGetBusiness {
   email: string;
   description: string;
   sector: string;
-  is_corporate_affairs: boolean;
-  is_setup_complete: boolean;
+  isCorporateAffair: boolean;
+  isSetupComplete: boolean;
   logo: string;
   kyc: IKyc;
   created_at: string;
@@ -20,8 +20,8 @@ export interface IGetBusiness {
 
 export interface IKyc {
   id: number;
-  certificate_of_registration: string;
-  proof_of_address: string;
+  certificateOfRegistration: string;
+  proofOfAddress: string;
   bvn: string;
   created_at: string;
   updated_at: string;

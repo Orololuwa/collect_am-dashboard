@@ -22,7 +22,7 @@ const BusinessGuard = ({ children }: { children: JSX.Element }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (!data?.is_setup_complete) {
+  if (!data?.isSetupComplete) {
     return <BusinessSetup />;
   }
 

@@ -7,7 +7,7 @@ class BusinessService {
   async getBusiness(): Promise<{ message: string; data: IGetBusiness }> {
     return new Promise(async (resolve, reject) => {
       try {
-        const response = await userInstance.get(`api/${v1}/business`);
+        const response = await userInstance.get(`api/${v1}/business/9`);
         resolve(response.data);
       } catch (error: any) {
         reject(error);
@@ -33,7 +33,7 @@ class BusinessService {
   ): Promise<{ message: string }> {
     return new Promise(async (resolve, reject) => {
       try {
-        const response = await userInstance.patch(`api/${v1}/business`, body);
+        const response = await userInstance.patch(`api/${v1}/business/9`, body);
         resolve(response.data);
       } catch (error: any) {
         reject(error);
