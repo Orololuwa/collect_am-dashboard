@@ -12,7 +12,7 @@ export const fetchInvoices = () => {
     try {
       dispatch(invoiceFetchingBegin());
       setTimeout(() => {
-        const data: InvoiceData[] = Array.from({ length: 47 }, () => ({
+        const data: InvoiceData[] = Array.from({ length: 2000 }, () => ({
           invoiceNo: faker.vehicle.vrm(),
           customerName: faker.person.fullName(),
           customerEmail: faker.internet.email(),

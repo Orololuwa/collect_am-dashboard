@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ProductEntity } from "../models/products";
+import { initPaginationState, IPagination } from "../models/shared";
 
 export interface ProductData {
   productCode: string;
@@ -10,14 +12,16 @@ export interface ProductData {
 
 interface ProductsState {
   loading: boolean;
-  data: ProductData[];
+  data: ProductEntity[];
+  pagination: IPagination;
   error: boolean;
 }
 
 const initialState: ProductsState = {
   loading: false,
   data: [],
-  error: false
+  error: false,
+  pagination: initPaginationState
 };
 
 const ProductsSlice = createSlice({
@@ -29,7 +33,7 @@ const ProductsSlice = createSlice({
     },
     productsFetchingSuccess: (
       state: ProductsState,
-      action: PayloadAction<ProductData[]>
+      action: PayloadAction<ProductEntity[]>
     ) => {
       state.data = action.payload;
       state.loading = false;

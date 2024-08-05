@@ -22,7 +22,7 @@ class ProductService {
       try {
         const { businessId } = getBusinessId();
         const response = await userInstance.get(
-          `api/${v1}/product/${businessId}`,
+          `api/${v1}/${businessId}/product`,
           {
             params: payload.queryParams
           }
@@ -44,7 +44,7 @@ class ProductService {
       try {
         const { businessId } = getBusinessId();
         const response = await userInstance.get(
-          `api/${v1}/product/${businessId}/${payload.pathVariables?.id}`,
+          `api/${v1}/${businessId}/product/${payload.pathVariables?.id}`,
           {
             params: payload.queryParams
           }
@@ -63,7 +63,7 @@ class ProductService {
       try {
         const { businessId } = getBusinessId();
         const response = await userInstance.post(
-          `api/${v1}/product/${businessId}`,
+          `api/${v1}/${businessId}/product`,
           payload.body
         );
         resolve(response.data);
@@ -80,7 +80,7 @@ class ProductService {
       try {
         const { businessId } = getBusinessId();
         const response = await userInstance.patch(
-          `api/${v1}/product/${businessId}`,
+          `api/${v1}/${businessId}/product`,
           payload.body
         );
         resolve(response.data);

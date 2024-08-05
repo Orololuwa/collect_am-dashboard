@@ -27,7 +27,7 @@ const AddDocument = (): JSX.Element => {
   // map products to dropdown options
   const productOptions = products?.map(
     (el): Option => ({
-      label: el.title,
+      label: el.name,
       value: el.id,
       isdisabled: false
     })
@@ -64,7 +64,7 @@ const AddDocument = (): JSX.Element => {
     const { value } = e.target;
 
     if (value === "placeholder") return;
-    const singleProduct = products.find((el) => el.id === value);
+    const singleProduct = products.find((el) => el.id === Number(value));
     if (!singleProduct) return;
     setProductState((prevState) => {
       const prevStateCopy = [...prevState];

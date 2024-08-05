@@ -2,7 +2,7 @@ import { currencyFormatter } from "app/utils";
 import DataTable from "views/containers/tables";
 import { Button, IconButton } from "views/components/button";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Pagination from "views/components/pagination";
 import Loading from "views/components/loading";
 import { useAppDispatch, useAppSelector } from "app/hooks";
@@ -18,7 +18,7 @@ const Products = (): JSX.Element => {
 
   // data
   const state = useAppSelector((state) => state.products);
-  const { data, loading, error } = state;
+  const { data, loading, error, pagination } = state;
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -27,8 +27,8 @@ const Products = (): JSX.Element => {
   // selectable rows
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const array = Array.from(selected);
-
   console.log(array);
+
   const onCheckHandler = (
     e: React.ChangeEvent<HTMLInputElement>,
     id: string
@@ -46,24 +46,18 @@ const Products = (): JSX.Element => {
     }
   };
 
-  // pagination
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const pageSize = 5;
-
-  const currentTableData = useMemo(() => {
-    const firstPageIndex = (currentPage - 1) * pageSize;
-    const lastPageIndex = firstPageIndex + pageSize;
-    return data.slice(firstPageIndex, lastPageIndex);
-  }, [currentPage, data]);
-
   // page info
-  const pageInfo = usePageInfo([currentPage, pageSize, data.length]);
+  const pageInfo = usePageInfo([
+    pagination.currPage,
+    pagination.pageSize,
+    pagination.total
+  ]);
 
   return (
     <>
       <Helmet pageTitle="Products - Collectam" />
       <div>
-        {currentTableData.length ? (
+        {data.length ? (
           <div>
             <div className="flex justify-between">
               <div className="flex items-center gap-5 px-5">
@@ -90,17 +84,17 @@ const Products = (): JSX.Element => {
                 </tr>
               </thead>
               <tbody>
-                {currentTableData.map((el) => (
-                  <tr key={el.productCode}>
+                {data.map((el) => (
+                  <tr key={el.code}>
                     <td>
                       <input
                         type="checkbox"
-                        checked={selected.has(el.productCode)}
-                        onChange={(e) => onCheckHandler(e, el.productCode)}
+                        checked={selected.has(el.code)}
+                        onChange={(e) => onCheckHandler(e, el.code)}
                       />
                     </td>
-                    <td>{el.productCode}</td>
-                    <td>{el.title}</td>
+                    <td>{el.code}</td>
+                    <td>{el.name}</td>
                     <td className="min-w-[15rem] max-w-lg">{el.description}</td>
                     <td>{currencyFormatter(el.price, "NGN")}</td>
                     <td align="right">
@@ -131,10 +125,12 @@ const Products = (): JSX.Element => {
               <div>{pageInfo}</div>
               <Pagination
                 className="pagination-bar"
-                currentPage={currentPage}
-                totalCount={data.length}
-                pageSize={pageSize}
-                onPageChange={(page: number) => setCurrentPage(page)}
+                currentPage={pagination.currPage}
+                totalCount={pagination.total}
+                pageSize={pagination.pageSize}
+                onPageChange={(page: number) => {
+                  console.log(page);
+                }}
               />
             </div>
           </div>
