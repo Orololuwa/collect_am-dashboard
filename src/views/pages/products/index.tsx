@@ -1,7 +1,7 @@
 import { currencyFormatter } from "app/utils";
 import DataTable from "views/containers/tables";
 import { Button, IconButton } from "views/components/button";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
 import { useCallback, useEffect, useState } from "react";
 import Loading from "views/components/loading";
 import { useAppDispatch, useAppSelector } from "app/hooks";
@@ -14,6 +14,9 @@ import { usePagination } from "@ajna/pagination";
 import PaginationWrapper from "views/components/pagination/ajna-wrapper";
 import { useDisclosure } from "@chakra-ui/react";
 import AddProductForm from "./add";
+import { ProductEntity } from "data/store/models/products";
+import EditProductForm from "./edit";
+import { format } from "date-fns";
 
 const Products = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -99,6 +102,15 @@ const Products = (): JSX.Element => {
 
   //
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const [currProduct, setCurrProduct] = useState<ProductEntity | null>(null);
+
+  const onOpenEditProductDrawer = (product: ProductEntity) => {
+    setCurrProduct(product);
+  };
+
+  const onCloseEditProductDrawer = () => {
+    setCurrProduct(null);
+  };
 
   return (
     <>
@@ -128,6 +140,10 @@ const Products = (): JSX.Element => {
                   <th>Title</th>
                   <th>Description</th>
                   <th>Price</th>
+                  <th>Category</th>
+                  <th>Date Created</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                   <th></th>
                 </tr>
               </thead>
@@ -145,23 +161,19 @@ const Products = (): JSX.Element => {
                     <td>{el.name}</td>
                     <td className="min-w-[15rem] max-w-lg">{el.description}</td>
                     <td>{currencyFormatter(el.price, "NGN")}</td>
+                    <td>{el.category}</td>
+                    <td>{format(new Date(el.createdAt), "dd MMM, yyyy")}</td>
+                    <td>{el.status}</td>
                     <td align="right">
                       <div className="flex items-center justify-center gap-4">
                         <Button
                           variant="secondary"
                           type="submit"
                           className="flex items-center gap-2 px-3 rounded-[0.75rem_!important]"
+                          onClick={() => onOpenEditProductDrawer(el)}
                         >
                           <FaEdit size={16} />
                           <span className="tracking-wider">Edit</span>
-                        </Button>
-                        <Button
-                          variant="danger"
-                          type="submit"
-                          className="flex items-center gap-2 px-3 rounded-[0.75rem_!important]"
-                        >
-                          <FaTrash size={16} />
-                          <span className="tracking-wider">Delete</span>
                         </Button>
                       </div>
                     </td>
@@ -191,6 +203,11 @@ const Products = (): JSX.Element => {
         {error ? <Err /> : null}
       </div>
       <AddProductForm isOpen={isOpen} onClose={onClose} />
+      <EditProductForm
+        isOpen={!!currProduct}
+        onClose={onCloseEditProductDrawer}
+        product={currProduct}
+      />
     </>
   );
 };

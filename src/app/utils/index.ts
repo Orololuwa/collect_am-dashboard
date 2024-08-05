@@ -1,5 +1,5 @@
 export const currencyFormatter = (amount: number, currency?: string) => {
-  return (amount / 100).toLocaleString("en-NG", {
+  return amount.toLocaleString("en-NG", {
     style: "currency",
     currency
   });

@@ -74,13 +74,19 @@ class ProductService {
   }
 
   async updateProduct(
-    payload: IGenericServicePayload<undefined, CreateProductBody, undefined>
+    payload: IGenericServicePayload<
+      undefined,
+      CreateProductBody,
+      { id: number }
+    >
   ): Promise<{ message: string; data: null }> {
     return new Promise(async (resolve, reject) => {
       try {
         const { businessId } = getBusinessId();
+        if (!payload.pathVariables) throw new Error("missing product id");
+        const { id } = payload.pathVariables;
         const response = await userInstance.patch(
-          `api/${v1}/${businessId}/product`,
+          `api/${v1}/${businessId}/product/${id}`,
           payload.body
         );
         resolve(response.data);
