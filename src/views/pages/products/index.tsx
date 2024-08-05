@@ -3,7 +3,6 @@ import DataTable from "views/containers/tables";
 import { Button, IconButton } from "views/components/button";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import Pagination from "views/components/pagination";
 import Loading from "views/components/loading";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { fetchProducts } from "data/store";
@@ -12,6 +11,8 @@ import { IoAddOutline, IoTrashBinOutline } from "react-icons/io5";
 import usePageInfo from "app/hooks/usePageInfo";
 import Helmet from "views/components/helmet";
 import { Link } from "react-router-dom";
+import { usePagination } from "@ajna/pagination";
+import PaginationWrapper from "views/components/pagination/ajna-wrapper";
 
 const Products = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -19,10 +20,6 @@ const Products = (): JSX.Element => {
   // data
   const state = useAppSelector((state) => state.products);
   const { data, loading, error, pagination } = state;
-
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, []);
 
   // selectable rows
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -52,6 +49,37 @@ const Products = (): JSX.Element => {
     pagination.pageSize,
     pagination.total
   ]);
+
+  const {
+    pages,
+    offset,
+    pageSize,
+    pagesCount,
+    isDisabled,
+    currentPage,
+    setPageSize,
+    setCurrentPage
+  } = usePagination({
+    limits: { inner: 2, outer: 1 },
+    total: pagination?.total,
+    initialState: {
+      currentPage: 1,
+      pageSize: pagination?.pageSize
+    }
+  });
+
+  const handlePageChange = (nextPage: number) => {
+    setCurrentPage(nextPage);
+    setTimeout(() => {
+      window.scrollTo({ top: 10, behavior: "smooth" });
+    }, 500);
+  };
+
+  //
+
+  useEffect(() => {
+    dispatch(fetchProducts({ page: currentPage, pageSize: pageSize }));
+  }, [pageSize, currentPage]);
 
   return (
     <>
@@ -123,14 +151,18 @@ const Products = (): JSX.Element => {
             </DataTable>
             <div className="flex items-center justify-between px-5">
               <div>{pageInfo}</div>
-              <Pagination
-                className="pagination-bar"
-                currentPage={pagination.currPage}
-                totalCount={pagination.total}
-                pageSize={pagination.pageSize}
-                onPageChange={(page: number) => {
-                  console.log(page);
-                }}
+
+              <PaginationWrapper
+                handlePageChange={handlePageChange}
+                totalDataCount={pagination?.total}
+                currentPage={currentPage}
+                isDisabled={isDisabled}
+                pagesCount={pagesCount}
+                setCurrentPage={setCurrentPage}
+                offset={offset}
+                pages={pages}
+                setPageSize={setPageSize}
+                pageSize={pageSize}
               />
             </div>
           </div>

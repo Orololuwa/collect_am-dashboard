@@ -33,9 +33,10 @@ const ProductsSlice = createSlice({
     },
     productsFetchingSuccess: (
       state: ProductsState,
-      action: PayloadAction<ProductEntity[]>
+      action: PayloadAction<{ data: ProductEntity[]; pagination: IPagination }>
     ) => {
-      state.data = action.payload;
+      state.data = action.payload.data;
+      state.pagination = action.payload.pagination;
       state.loading = false;
       state.error = false;
     },

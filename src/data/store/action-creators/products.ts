@@ -7,15 +7,15 @@ import {
 import productsService from "data/services/products.service";
 import { GetProductsQueryParams } from "app/types/products";
 
-export const fetchProducts = (params?: GetProductsQueryParams) => {
+export const fetchProducts = (params?: Partial<GetProductsQueryParams>) => {
   return async (dispatch: Dispatch) => {
     try {
       dispatch(productsFetchingBegin());
 
-      const { data } = await productsService.getProducts({
+      const { data, pagination } = await productsService.getProducts({
         queryParams: params
       });
-      dispatch(productsFetchingSuccess(data));
+      dispatch(productsFetchingSuccess({ data, pagination }));
     } catch (err) {
       dispatch(productsFetchingError());
     }
