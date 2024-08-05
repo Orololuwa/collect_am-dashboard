@@ -2,7 +2,7 @@ import { currencyFormatter } from "app/utils";
 import DataTable from "views/containers/tables";
 import { Button, IconButton } from "views/components/button";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Loading from "views/components/loading";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { fetchProducts } from "data/store";
@@ -28,7 +28,14 @@ const Products = (): JSX.Element => {
   // selectable rows
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const array = Array.from(selected);
-  console.log(array);
+
+  const logSelected = useCallback(() => {
+    if (selected.size === 0) return;
+
+    console.log({ selected, array });
+  }, [selected]);
+
+  logSelected();
 
   const onCheckHandler = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -45,6 +52,12 @@ const Products = (): JSX.Element => {
         return new Set(prevState);
       });
     }
+  };
+
+  const clearSelected = () => {
+    setSelected(() => {
+      return new Set();
+    });
   };
 
   // page info
@@ -95,7 +108,10 @@ const Products = (): JSX.Element => {
           <div>
             <div className="flex justify-between">
               <div className="flex items-center gap-5 px-5">
-                <IconButton icon={<IoTrashBinOutline size={20} />} />
+                <IconButton
+                  icon={<IoTrashBinOutline size={20} />}
+                  onClick={clearSelected}
+                />
               </div>
               <Button onClick={onOpen}>
                 <span className="flex items-center gap-3">
