@@ -10,15 +10,19 @@ import Err from "views/components/error";
 import { IoAddOutline, IoTrashBinOutline } from "react-icons/io5";
 import usePageInfo from "app/hooks/usePageInfo";
 import Helmet from "views/components/helmet";
-import { Link } from "react-router-dom";
 import { usePagination } from "@ajna/pagination";
 import PaginationWrapper from "views/components/pagination/ajna-wrapper";
+import { useDisclosure } from "@chakra-ui/react";
+import AddProductForm from "./add";
 
 const Products = (): JSX.Element => {
   const dispatch = useAppDispatch();
 
   // data
-  const state = useAppSelector((state) => state.products);
+  const [state, newProductSessionCount] = useAppSelector((state) => [
+    state.products.all,
+    state.products.session.newProductCount
+  ]);
   const { data, loading, error, pagination } = state;
 
   // selectable rows
@@ -76,10 +80,12 @@ const Products = (): JSX.Element => {
   };
 
   //
-
   useEffect(() => {
     dispatch(fetchProducts({ page: currentPage, pageSize: pageSize }));
-  }, [pageSize, currentPage]);
+  }, [pageSize, currentPage, newProductSessionCount]);
+
+  //
+  const { isOpen, onClose, onOpen } = useDisclosure();
 
   return (
     <>
@@ -91,14 +97,12 @@ const Products = (): JSX.Element => {
               <div className="flex items-center gap-5 px-5">
                 <IconButton icon={<IoTrashBinOutline size={20} />} />
               </div>
-              <Link to="./add" className="flex items-center gap-5 px-5">
-                <Button>
-                  <span className="flex items-center gap-3">
-                    <IoAddOutline size={18} />
-                    <span>New Product</span>
-                  </span>
-                </Button>
-              </Link>
+              <Button onClick={onOpen}>
+                <span className="flex items-center gap-3">
+                  <IoAddOutline size={18} />
+                  <span>New Product</span>
+                </span>
+              </Button>
             </div>
             <DataTable>
               <thead>
@@ -170,6 +174,7 @@ const Products = (): JSX.Element => {
         {loading ? <Loading /> : null}
         {error ? <Err /> : null}
       </div>
+      <AddProductForm isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

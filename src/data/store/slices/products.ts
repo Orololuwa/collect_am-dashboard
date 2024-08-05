@@ -11,17 +11,27 @@ export interface ProductData {
 }
 
 interface ProductsState {
-  loading: boolean;
-  data: ProductEntity[];
-  pagination: IPagination;
-  error: boolean;
+  all: {
+    loading: boolean;
+    data: ProductEntity[];
+    pagination: IPagination;
+    error: boolean;
+  };
+  session: {
+    newProductCount: number;
+  };
 }
 
 const initialState: ProductsState = {
-  loading: false,
-  data: [],
-  error: false,
-  pagination: initPaginationState
+  all: {
+    loading: false,
+    data: [],
+    error: false,
+    pagination: initPaginationState
+  },
+  session: {
+    newProductCount: 0
+  }
 };
 
 const ProductsSlice = createSlice({
@@ -29,19 +39,22 @@ const ProductsSlice = createSlice({
   initialState,
   reducers: {
     productsFetchingBegin: (state: ProductsState) => {
-      state.loading = true;
+      state.all.loading = true;
     },
     productsFetchingSuccess: (
       state: ProductsState,
       action: PayloadAction<{ data: ProductEntity[]; pagination: IPagination }>
     ) => {
-      state.data = action.payload.data;
-      state.pagination = action.payload.pagination;
-      state.loading = false;
-      state.error = false;
+      state.all.data = action.payload.data;
+      state.all.pagination = action.payload.pagination;
+      state.all.loading = false;
+      state.all.error = false;
     },
     productsFetchingError: (state: ProductsState) => {
-      state.error = true;
+      state.all.error = true;
+    },
+    updateNewProductSession: (state: ProductsState) => {
+      state.session.newProductCount++;
     }
   }
 });
@@ -51,5 +64,6 @@ export const {
   productsFetchingSuccess,
   productsFetchingError
 } = ProductsSlice.actions;
+export const actions = ProductsSlice.actions;
 
 export default ProductsSlice.reducer;

@@ -16,7 +16,6 @@ const Invoice = lazy(() => import("views/pages/invoices"));
 const AddInvoice = lazy(() => import("views/pages/invoices/add-invoice"));
 const AddInvoiceBatch = lazy(() => import("views/pages/invoices/upload-batch"));
 const Products = lazy(() => import("views/pages/products"));
-const AddProductForm = lazy(() => import("views/pages/products/add"));
 const Receipts = lazy(() => import("views/pages/receipts"));
 const AddReceipt = lazy(() => import("views/pages/receipts/add-receipt"));
 const AddReceiptBatch = lazy(() => import("views/pages/receipts/upload-batch"));
@@ -85,10 +84,6 @@ const routes: RouteObject[] = [
       {
         element: <Products />,
         path: "/products"
-      },
-      {
-        element: <AddProductForm />,
-        path: "/products/add"
       },
       {
         element: <Receipts />,

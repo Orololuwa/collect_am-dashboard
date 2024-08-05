@@ -2,7 +2,8 @@ import { Dispatch } from "@reduxjs/toolkit";
 import {
   productsFetchingBegin,
   productsFetchingSuccess,
-  productsFetchingError
+  productsFetchingError,
+  actions
 } from "../slices/products";
 import productsService from "data/services/products.service";
 import { GetProductsQueryParams } from "app/types/products";
@@ -19,5 +20,11 @@ export const fetchProducts = (params?: Partial<GetProductsQueryParams>) => {
     } catch (err) {
       dispatch(productsFetchingError());
     }
+  };
+};
+
+export const updateNewProductSession = () => {
+  return (dispatch: Dispatch) => {
+    dispatch(actions.updateNewProductSession());
   };
 };

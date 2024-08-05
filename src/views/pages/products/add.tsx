@@ -1,86 +1,205 @@
-import { Button } from "views/components/button";
-import InputBlock, { TextArea } from "views/components/input/inputBlock";
-import InputCurrency from "views/components/input/inputCurrency";
-import styled from "styled-components";
-import { useToasts } from "react-toast-notifications";
 import { useState } from "react";
 import Loading from "views/components/loading";
-import { useNavigate } from "react-router-dom";
+import {
+  Button,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay
+} from "@chakra-ui/react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import RhfInput, { RhfTextarea } from "views/components/input/rhf-input";
+import RhfSelect from "views/components/select/rhf-select";
+import { Option } from "views/components/dropdown";
+import { useAppDispatch } from "app/hooks";
+import { updateNewProductSession } from "data/store";
+import productsService from "data/services/products.service";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
+import { DEFAULT_ERROR_MESSAGE } from "data/config";
 
-const AddProductForm = (): JSX.Element => {
+const schema = yup.object({
+  name: yup.string().min(3).required(),
+  code: yup.string().min(3).required(),
+  description: yup.string().min(3).required(),
+  price: yup.number().moreThan(0).required(),
+  count: yup.number().min(0).required(),
+  category: yup.string().required()
+});
+
+type ISchema = yup.InferType<typeof schema>;
+
+const defaultValues: ISchema = {
+  code: "",
+  description: "",
+  name: "",
+  price: 0,
+  count: 0,
+  category: ""
+};
+
+const productCategories: Option[] = [
+  { value: "electronics", label: "Electronics" },
+  { value: "fashion", label: "Fashion" },
+  { value: "home_appliances", label: "Home Appliances" },
+  { value: "beauty_health", label: "Beauty & Health" },
+  { value: "sports", label: "Sports" },
+  { value: "automotive", label: "Automotive" },
+  { value: "books", label: "Books" },
+  { value: "toys", label: "Toys" },
+  { value: "grocery", label: "Grocery" },
+  { value: "furniture", label: "Furniture" },
+  { value: "jewelry", label: "Jewelry" },
+  { value: "garden_outdoor", label: "Garden & Outdoor" },
+  { value: "baby_products", label: "Baby Products" },
+  { value: "pet_supplies", label: "Pet Supplies" },
+  { value: "office_supplies", label: "Office Supplies" },
+  { value: "software", label: "Software" },
+  { value: "music", label: "Music" },
+  { value: "movies", label: "Movies" },
+  { value: "video_games", label: "Video Games" },
+  { value: "art_crafts", label: "Art & Crafts" },
+  { value: "travel_accessories", label: "Travel Accessories" },
+  { value: "handmade", label: "Handmade" },
+  { value: "computers", label: "Computers" },
+  { value: "phones_tablets", label: "Phones & Tablets" },
+  { value: "kitchen_dining", label: "Kitchen & Dining" },
+  { value: "tools", label: "Tools" },
+  { value: "watches", label: "Watches" },
+  { value: "luggage", label: "Luggage" },
+  { value: "gift_cards", label: "Gift Cards" },
+  { value: "collectibles", label: "Collectibles" }
+];
+
+const AddProductForm = ({
+  isOpen,
+  onClose
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(false);
-  const { addToast } = useToasts();
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  const submitProduct = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<ISchema> = async (data) => {
+    console.log({ data });
     setLoading(true);
+    try {
+      const res = await productsService.createProduct({ body: { ...data } });
 
-    setTimeout(() => {
-      addToast("Product added successfully", {
-        appearance: "success"
-      });
+      toast.success(res.message);
       setLoading(false);
-      navigate("../products");
-    }, 1000);
+      onClose();
+      dispatch(updateNewProductSession());
+    } catch (err) {
+      const axiosError = err as AxiosError<{ message: string }>;
+      const msg = axiosError.response?.data?.message || DEFAULT_ERROR_MESSAGE;
+      toast.error(msg);
+      setLoading(false);
+    }
   };
+
+  // rhf form
+  const rhf = useForm<ISchema>({
+    defaultValues,
+    mode: "onChange",
+    resolver: yupResolver(schema)
+  });
+
+  const category = rhf.watch("category");
 
   return (
     <>
-      <Wrapper className="container">
-        <h5 className="text-4xlxl">Create Product</h5>
-        <form className="my-10" onSubmit={submitProduct}>
-          <div className="flex gap-5 flex-wrap">
-            <div className="py-2 inline-block">
-              <label htmlFor="productName">
-                Name of the product or service*
-              </label>
-              <InputBlock w="30rem" type="text" id="productName" />
-            </div>
-            <div className="py-2 inline-block">
-              <label htmlFor="productCode">ProductCode</label>
-              <InputBlock w="30rem" type="text" id="productCode" />
-            </div>
-          </div>
-          <div className="flex gap-5 flex-wrap mt-5">
-            <div className="py-2 inline-block">
-              <label htmlFor="productDesc" className="flex items-center gap-2">
-                <h6>Description</h6>
-                <small className="text-xs">
-                  Automatically inserted as default for new invoices
-                </small>
-              </label>
-              <TextArea w="30rem" id="productDesc" />
-            </div>
-            <div className="py-2 inline-block">
-              <label htmlFor="price">Price (&#x20A6;)</label>
-              <InputCurrency
-                thousandSeparator={true}
-                prefix="₦"
-                inputMode="numeric"
-                fixedDecimalScale={false}
-                decimalScale={2}
-                allowLeadingZeros={false}
-                displayType="input"
-                id="price"
-                w="30rem"
+      <Drawer
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        size="md"
+        colorScheme="primary"
+      >
+        <DrawerOverlay />
+        <form className="my-10" onSubmit={rhf.handleSubmit(onSubmit)}>
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerHeader>Add Product</DrawerHeader>
+
+            <DrawerBody>
+              <RhfInput
+                type="text"
+                name="code"
+                label="Product Code"
+                control={rhf.control}
+                isInvalid={Boolean(rhf.formState.errors?.code)}
+                helperText={rhf.formState.errors?.code?.message}
               />
-            </div>
-          </div>
-          <div className="my-10">
-            <Button type="submit">Save Product</Button>
-          </div>
+
+              <RhfInput
+                type="text"
+                name="name"
+                label="Name"
+                control={rhf.control}
+                isInvalid={Boolean(rhf.formState.errors?.name)}
+                helperText={rhf.formState.errors?.name?.message}
+              />
+
+              <RhfTextarea
+                name="description"
+                label="Description"
+                control={rhf.control}
+                helperText={rhf.formState.errors?.description?.message}
+              />
+
+              <RhfSelect
+                name="category"
+                label="Category"
+                maxMenuHeight={300}
+                control={rhf.control}
+                options={productCategories}
+                value={{
+                  value: category,
+                  label: category
+                }}
+                helperText={rhf.formState.errors?.category?.message}
+              />
+
+              <RhfInput
+                type="number"
+                name="price"
+                label="Price"
+                control={rhf.control}
+                isInvalid={Boolean(rhf.formState.errors?.price)}
+                helperText={rhf.formState.errors?.price?.message}
+              />
+
+              <RhfInput
+                type="number"
+                name="count"
+                label="Count"
+                control={rhf.control}
+                isInvalid={Boolean(rhf.formState.errors?.count)}
+                helperText={rhf.formState.errors?.count?.message}
+              />
+            </DrawerBody>
+
+            <DrawerFooter>
+              <Button variant="outline" mr={3} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button colorScheme="primary" type="submit">
+                Save Product
+              </Button>
+            </DrawerFooter>
+          </DrawerContent>
         </form>
-      </Wrapper>
+      </Drawer>
       {loading ? <Loading /> : null}
     </>
   );
 };
-
-const Wrapper = styled.div`
-  h5 {
-    color: ${({ theme }) => theme.colors.main.secondary[200]};
-  }
-`;
 
 export default AddProductForm;

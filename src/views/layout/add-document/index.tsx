@@ -22,7 +22,7 @@ const initialProductState: ProductDataProps = {
 
 const AddDocument = (): JSX.Element => {
   // get avalaible products from the store
-  const products = useAppSelector((state) => state.products.data);
+  const products = useAppSelector((state) => state.products.all.data);
 
   // map products to dropdown options
   const productOptions = products?.map(
