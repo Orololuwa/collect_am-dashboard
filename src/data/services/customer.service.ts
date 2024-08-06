@@ -1,32 +1,32 @@
 import { userInstance } from "data/axios-setup";
 import { v1 } from "data/apis";
-import { ProductEntity } from "data/store/models/products";
 import { IPagination } from "data/store/models/shared";
 import { getBusinessId } from "app/utils/business-id.util";
-import {
-  CreateProductBody,
-  GetProductsQueryParams,
-  UpdateProductBody
-} from "app/types/products";
 import { IGenericServicePayload } from "app/types";
+import { CustomerEntity } from "data/store/models/customers";
+import {
+  CreateCustomerBody,
+  GetCustomerQueryParams,
+  UpdateCustomerBody
+} from "app/types/customer";
 
-class ProductService {
-  async getProducts(
+class CustomerService {
+  async getCustomers(
     payload: IGenericServicePayload<
-      GetProductsQueryParams,
+      GetCustomerQueryParams,
       undefined,
       undefined
     >
   ): Promise<{
     message: string;
-    data: ProductEntity[];
+    data: CustomerEntity[];
     pagination: IPagination;
   }> {
     return new Promise(async (resolve, reject) => {
       try {
         const { businessId } = getBusinessId();
         const response = await userInstance.get(
-          `api/${v1}/${businessId}/product`,
+          `api/${v1}/${businessId}/customer`,
           {
             params: payload.queryParams
           }
@@ -38,17 +38,17 @@ class ProductService {
     });
   }
 
-  async getProduct(
+  async getCustomer(
     payload: IGenericServicePayload<undefined, undefined, { id: number }>
   ): Promise<{
     message: string;
-    data: ProductEntity;
+    data: CustomerEntity;
   }> {
     return new Promise(async (resolve, reject) => {
       try {
         const { businessId } = getBusinessId();
         const response = await userInstance.get(
-          `api/${v1}/${businessId}/product/${payload.pathVariables?.id}`,
+          `api/${v1}/${businessId}/customer/${payload.pathVariables?.id}`,
           {
             params: payload.queryParams
           }
@@ -60,14 +60,14 @@ class ProductService {
     });
   }
 
-  async createProduct(
-    payload: IGenericServicePayload<undefined, CreateProductBody, undefined>
+  async addCustomer(
+    payload: IGenericServicePayload<undefined, CreateCustomerBody, undefined>
   ): Promise<{ message: string; data: number }> {
     return new Promise(async (resolve, reject) => {
       try {
         const { businessId } = getBusinessId();
         const response = await userInstance.post(
-          `api/${v1}/${businessId}/product`,
+          `api/${v1}/${businessId}/customer`,
           payload.body
         );
         resolve(response.data);
@@ -77,10 +77,10 @@ class ProductService {
     });
   }
 
-  async updateProduct(
+  async updateCustomer(
     payload: IGenericServicePayload<
       undefined,
-      UpdateProductBody,
+      UpdateCustomerBody,
       { id: number }
     >
   ): Promise<{ message: string; data: null }> {
@@ -90,7 +90,7 @@ class ProductService {
         if (!payload.pathVariables) throw new Error("missing product id");
         const { id } = payload.pathVariables;
         const response = await userInstance.patch(
-          `api/${v1}/${businessId}/product/${id}`,
+          `api/${v1}/${businessId}/customer/${id}`,
           payload.body
         );
         resolve(response.data);
@@ -101,4 +101,4 @@ class ProductService {
   }
 }
 
-export default new ProductService();
+export default new CustomerService();
