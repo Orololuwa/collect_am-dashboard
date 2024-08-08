@@ -5,7 +5,7 @@ export interface CustomerEntity {
   code: string;
   status: string;
   businessId: number;
-  type: string;
+  type: NonNullable<"individual" | "corporate" | undefined>;
   firstName: string;
   lastName: string;
   name: string;

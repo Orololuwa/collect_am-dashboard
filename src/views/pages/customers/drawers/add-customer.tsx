@@ -27,7 +27,7 @@ import RhfSelect from "views/components/select/rhf-select";
 import { Option } from "views/components/dropdown";
 import Address from "./address";
 
-const schema = yup.object().shape({
+export const schema = yup.object().shape({
   type: yup
     .string()
     .oneOf(["individual", "corporate"])

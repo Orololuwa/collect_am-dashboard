@@ -15,7 +15,8 @@ import PaginationWrapper from "views/components/pagination/ajna-wrapper";
 import AddCustomer from "./drawers/add-customer";
 import { useDisclosure } from "@chakra-ui/react";
 import EditAddress from "./drawers/edit-address";
-import { AddressEntity } from "data/store/models/customers";
+import { AddressEntity, CustomerEntity } from "data/store/models/customers";
+import EditDetails from "./drawers/edit-details";
 
 const Customers = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -111,6 +112,16 @@ const Customers = (): JSX.Element => {
     setAddressView(null);
   };
 
+  const [isEditCustomerView, setEditCustomerView] =
+    useState<CustomerEntity | null>(null);
+
+  const onOpenEditCustomerView = (el: CustomerEntity) => {
+    setEditCustomerView(el);
+  };
+  const onCloseEditCustomerView = () => {
+    setEditCustomerView(null);
+  };
+
   return (
     <>
       <Helmet pageTitle="Customers - Collectam" />
@@ -178,6 +189,7 @@ const Customers = (): JSX.Element => {
                         variant="secondary"
                         type="submit"
                         className="flex items-center gap-2 px-3 rounded-[0.75rem_!important]"
+                        onClick={() => onOpenEditCustomerView(el)}
                       >
                         <FaEdit size={16} />
                         <span className="tracking-wider">Edit</span>
@@ -208,6 +220,11 @@ const Customers = (): JSX.Element => {
         {error ? <Err /> : null}
       </div>
       <AddCustomer isOpen={isOpen} onClose={onClose} />
+      <EditDetails
+        isOpen={!!isEditCustomerView}
+        onClose={onCloseEditCustomerView}
+        customer={isEditCustomerView}
+      />
       <EditAddress
         isOpen={!!isAddressView}
         onClose={onCloseAddressView}
