@@ -18,7 +18,7 @@ interface ProductsState {
     error: boolean;
   };
   session: {
-    newProductCount: number;
+    refreshCount: number;
   };
 }
 
@@ -30,7 +30,7 @@ const initialState: ProductsState = {
     pagination: initPaginationState
   },
   session: {
-    newProductCount: 0
+    refreshCount: 0
   }
 };
 
@@ -53,8 +53,8 @@ const ProductsSlice = createSlice({
     productsFetchingError: (state: ProductsState) => {
       state.all.error = true;
     },
-    updateNewProductSession: (state: ProductsState) => {
-      state.session.newProductCount++;
+    updateSessionRefresh: (state: ProductsState) => {
+      state.session.refreshCount++;
     }
   }
 });

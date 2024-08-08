@@ -25,6 +25,6 @@ export const fetchProducts = (params?: Partial<GetProductsQueryParams>) => {
 
 export const updateNewProductSession = () => {
   return (dispatch: Dispatch) => {
-    dispatch(actions.updateNewProductSession());
+    dispatch(actions.updateSessionRefresh());
   };
 };

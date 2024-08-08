@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { CustomerEntity } from "../models/customers";
+import { initPaginationState, IPagination } from "../models/shared";
 
 export interface CustomerData {
   customerNo: string;
@@ -9,15 +11,27 @@ export interface CustomerData {
 }
 
 interface CustomersState {
-  loading: boolean;
-  data: CustomerData[];
-  error: boolean;
+  all: {
+    loading: boolean;
+    data: CustomerEntity[];
+    pagination: IPagination;
+    error: boolean;
+  };
+  session: {
+    refreshCount: number;
+  };
 }
 
 const initialState: CustomersState = {
-  loading: false,
-  data: [],
-  error: false
+  all: {
+    loading: false,
+    data: [],
+    error: false,
+    pagination: initPaginationState
+  },
+  session: {
+    refreshCount: 0
+  }
 };
 
 const CustomersSlice = createSlice({
@@ -25,26 +39,26 @@ const CustomersSlice = createSlice({
   initialState,
   reducers: {
     customersFetchingBegin: (state: CustomersState) => {
-      state.loading = true;
+      state.all.loading = true;
     },
     customersFetchingSuccess: (
       state: CustomersState,
-      action: PayloadAction<CustomerData[]>
+      action: PayloadAction<{ data: CustomerEntity[]; pagination: IPagination }>
     ) => {
-      state.data = action.payload;
-      state.loading = false;
-      state.error = false;
+      state.all.data = action.payload.data;
+      state.all.pagination = action.payload.pagination;
+      state.all.loading = false;
+      state.all.error = false;
     },
     customersFetchingError: (state: CustomersState) => {
-      state.error = true;
+      state.all.error = true;
+    },
+    updateSessionRefresh: (state: CustomersState) => {
+      state.session.refreshCount++;
     }
   }
 });
 
-export const {
-  customersFetchingBegin,
-  customersFetchingSuccess,
-  customersFetchingError
-} = CustomersSlice.actions;
+export const actions = CustomersSlice.actions;
 
 export default CustomersSlice.reducer;

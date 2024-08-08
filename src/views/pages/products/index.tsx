@@ -24,7 +24,7 @@ const Products = (): JSX.Element => {
   // data
   const [state, newProductSessionCount] = useAppSelector((state) => [
     state.products.all,
-    state.products.session.newProductCount
+    state.products.session.refreshCount
   ]);
   const { data, loading, error, pagination } = state;
 
