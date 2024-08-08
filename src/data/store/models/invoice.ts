@@ -1,3 +1,5 @@
+import { CustomerEntity } from "./customers";
+
 export interface InvoiceEntity {
   id: number;
   createdAt: string;
@@ -15,6 +17,7 @@ export interface InvoiceEntity {
   businessId: number;
   listedProducts: ListedProductEntity[];
   customerId: number;
+  customer: CustomerEntity;
 }
 
 export interface ListedProductEntity {

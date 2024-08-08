@@ -68,6 +68,14 @@ const SideBar = (): JSX.Element => {
             </div>
           </Link>
         </Tooltip>
+        <Tooltip overlay="customers" colorMode="light" isActive={!isShow}>
+          <Link to="/customers" navlink>
+            <div className="flex items-center">
+              <IoPeopleCircle size={35} className="mx-4" />
+              {isShow ? <h6 className="text-xl">Customers</h6> : null}
+            </div>
+          </Link>
+        </Tooltip>
         <Tooltip overlay="invoice" colorMode="light" isActive={!isShow}>
           <Link to="/invoices" navlink>
             <div className="flex items-center">
@@ -81,14 +89,6 @@ const SideBar = (): JSX.Element => {
             <div className="flex items-center">
               <IoReceipt size={35} className="mx-4" />
               {isShow ? <h6 className="text-xl">Receipt</h6> : null}
-            </div>
-          </Link>
-        </Tooltip>
-        <Tooltip overlay="customers" colorMode="light" isActive={!isShow}>
-          <Link to="/customers" navlink>
-            <div className="flex items-center">
-              <IoPeopleCircle size={35} className="mx-4" />
-              {isShow ? <h6 className="text-xl">Customers</h6> : null}
             </div>
           </Link>
         </Tooltip>

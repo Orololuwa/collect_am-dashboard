@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { InvoiceEntity } from "../models/invoice";
+import { initPaginationState, IPagination } from "../models/shared";
 
 export interface InvoiceData {
   invoiceNo: string;
@@ -11,15 +13,27 @@ export interface InvoiceData {
 }
 
 interface InvoiceState {
-  loading: boolean;
-  data: InvoiceData[];
-  error: boolean;
+  all: {
+    loading: boolean;
+    data: InvoiceEntity[];
+    pagination: IPagination;
+    error: boolean;
+  };
+  session: {
+    refreshCount: number;
+  };
 }
 
 const initialState: InvoiceState = {
-  loading: false,
-  data: [],
-  error: false
+  all: {
+    loading: false,
+    data: [],
+    error: false,
+    pagination: initPaginationState
+  },
+  session: {
+    refreshCount: 0
+  }
 };
 
 const InvoiceSlice = createSlice({
@@ -27,18 +41,22 @@ const InvoiceSlice = createSlice({
   initialState,
   reducers: {
     invoiceFetchingBegin: (state: InvoiceState) => {
-      state.loading = true;
+      state.all.loading = true;
     },
     invoiceFetchingSuccess: (
       state: InvoiceState,
-      action: PayloadAction<InvoiceData[]>
+      action: PayloadAction<{ data: InvoiceEntity[]; pagination: IPagination }>
     ) => {
-      state.data = action.payload;
-      state.loading = false;
-      state.error = false;
+      state.all.data = action.payload.data;
+      state.all.pagination = action.payload.pagination;
+      state.all.loading = false;
+      state.all.error = false;
     },
     invoiceFetchingError: (state: InvoiceState) => {
-      state.error = true;
+      state.all.error = true;
+    },
+    updateSessionRefresh: (state: InvoiceState) => {
+      state.session.refreshCount++;
     }
   }
 });
@@ -48,5 +66,6 @@ export const {
   invoiceFetchingSuccess,
   invoiceFetchingError
 } = InvoiceSlice.actions;
+export const actions = InvoiceSlice.actions;
 
 export default InvoiceSlice.reducer;

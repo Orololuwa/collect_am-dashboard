@@ -1,31 +1,25 @@
 import { Dispatch } from "@reduxjs/toolkit";
-import {
-  invoiceFetchingBegin,
-  invoiceFetchingSuccess,
-  invoiceFetchingError,
-  InvoiceData
-} from "../slices/invoices";
-import { faker } from "@faker-js/faker";
+import { GetInvoicesQueryParams } from "app/types/invoice";
+import { actions } from "../slices/invoices";
+import invoiceService from "data/services/invoice.service";
 
-export const fetchInvoices = () => {
+export const fetchInvoices = (params?: Partial<GetInvoicesQueryParams>) => {
   return async (dispatch: Dispatch) => {
     try {
-      dispatch(invoiceFetchingBegin());
-      setTimeout(() => {
-        const data: InvoiceData[] = Array.from({ length: 2000 }, () => ({
-          invoiceNo: faker.vehicle.vrm(),
-          customerName: faker.person.fullName(),
-          customerEmail: faker.internet.email(),
-          amount: +faker.finance.amount(5000, 1000000),
-          dueDate: faker.date.future(),
-          dateSent: faker.date.recent(),
-          status: "pending",
-          house: "7458"
-        }));
-        dispatch(invoiceFetchingSuccess(data));
-      }, 1000);
+      dispatch(actions.invoiceFetchingBegin());
+
+      const { data, pagination } = await invoiceService.getInvoices({
+        queryParams: params
+      });
+      dispatch(actions.invoiceFetchingSuccess({ data, pagination }));
     } catch (err) {
-      dispatch(invoiceFetchingError());
+      dispatch(actions.invoiceFetchingError());
     }
+  };
+};
+
+export const updateInvoiceSessionRefresh = () => {
+  return (dispatch: Dispatch) => {
+    dispatch(actions.updateSessionRefresh());
   };
 };

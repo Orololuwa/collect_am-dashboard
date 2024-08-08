@@ -1,34 +1,46 @@
-import { currencyFormatter } from "app/utils";
 import DataTable from "views/containers/tables";
-import { format } from "date-fns";
-import { Button } from "views/components/button";
+import { Button, IconButton } from "views/components/button";
 import { FaEdit } from "react-icons/fa";
-import { useEffect, useMemo, useState } from "react";
-import Pagination from "views/components/pagination";
+import { useCallback, useEffect, useState } from "react";
 import Loading from "views/components/loading";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { fetchInvoices } from "data/store";
 import Err from "views/components/error";
 import usePageInfo from "app/hooks/usePageInfo";
 import Helmet from "views/components/helmet";
+import { IoTrashBinOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { usePagination } from "@ajna/pagination";
+import PaginationWrapper from "views/components/pagination/ajna-wrapper";
+import { Flex, Stack, Text } from "@chakra-ui/react";
+import { format } from "date-fns";
+import { currencyFormatter } from "app/utils";
 
 const Invoices = (): JSX.Element => {
   const dispatch = useAppDispatch();
 
   // data
-  const state = useAppSelector((state) => state.invoices);
-  const { data, loading, error } = state;
-
-  useEffect(() => {
-    dispatch(fetchInvoices());
-  }, []);
+  const [state, refreshCount] = useAppSelector((state) => [
+    state.invoices.all,
+    state.invoices.session.refreshCount
+  ]);
+  const { data, loading, error, pagination } = state;
 
   // selectable rows
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const array = Array.from(selected);
+
+  const logSelected = useCallback(() => {
+    if (selected.size === 0) return;
+
+    console.log({ selected, array });
+  }, [selected]);
+
+  logSelected();
+
   const onCheckHandler = (
     e: React.ChangeEvent<HTMLInputElement>,
-    id: string
+    id: number
   ) => {
     if (e.target.checked) {
       setSelected((prevState) => {
@@ -43,32 +55,66 @@ const Invoices = (): JSX.Element => {
     }
   };
 
-  // pagination
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const pageSize = 10;
-
-  const currentTableData = useMemo(() => {
-    const firstPageIndex = (currentPage - 1) * pageSize;
-    const lastPageIndex = firstPageIndex + pageSize;
-    return data.slice(firstPageIndex, lastPageIndex);
-  }, [currentPage, data]);
+  const clearSelected = () => {
+    setSelected(() => {
+      return new Set();
+    });
+  };
 
   // page info
-  const pageInfo = usePageInfo([currentPage, pageSize, data.length]);
+  const pageInfo = usePageInfo([
+    pagination.currPage,
+    pagination.pageSize,
+    pagination.total
+  ]);
+
+  const {
+    pages,
+    offset,
+    pageSize,
+    pagesCount,
+    isDisabled,
+    currentPage,
+    setPageSize,
+    setCurrentPage
+  } = usePagination({
+    limits: { inner: 2, outer: 1 },
+    total: pagination?.total,
+    initialState: {
+      currentPage: 1,
+      pageSize: pagination?.pageSize
+    }
+  });
+
+  const handlePageChange = (nextPage: number) => {
+    setCurrentPage(nextPage);
+    setTimeout(() => {
+      window.scrollTo({ top: 10, behavior: "smooth" });
+    }, 500);
+  };
+
+  //
+  useEffect(() => {
+    dispatch(fetchInvoices({ page: currentPage, pageSize: pageSize }));
+  }, [pageSize, currentPage, refreshCount]);
 
   return (
     <>
-      <Helmet pageTitle="Invoice - Collectam" />
+      <Helmet pageTitle="Invoices - Collectam" />
       <div>
-        {currentTableData.length ? (
+        {data.length ? (
           <div>
-            <div className="flex justify-end">
+            <div className="flex justify-between">
               <div className="flex items-center gap-5 px-5">
-                <Link to="/add-document/invoice">
-                  <Button>New Single Invoice</Button>
-                </Link>
+                <IconButton
+                  icon={<IoTrashBinOutline size={20} />}
+                  onClick={clearSelected}
+                />
+              </div>
+              <div className="flex items-center gap-5 px-5">
+                <Button>New Invoice</Button>
                 <Link to="./batch">
-                  <Button>Upload Schedule</Button>
+                  <Button>Upload Batch</Button>
                 </Link>
               </div>
             </div>
@@ -76,42 +122,74 @@ const Invoices = (): JSX.Element => {
               <thead>
                 <tr>
                   <th></th>
-                  <th>Invoice Number</th>
-                  <th>Customer Name</th>
-                  <th>Customer Email</th>
-                  <th>Amount</th>
-                  <th>Date Sent</th>
-                  <th>Due Date</th>
-                  <th>Status</th>
-                  <th></th>
+                  <th className="whitespace-nowrap">Id</th>
+                  <th className="whitespace-nowrap">Invoice no.</th>
+                  <th className="whitespace-nowrap">Customer</th>
+                  <th className="whitespace-nowrap">Description</th>
+                  <th className="whitespace-nowrap">Due Date</th>
+                  <th className="whitespace-nowrap">Price</th>
+                  <th className="whitespace-nowrap">Amount Paid</th>
+                  <th className="whitespace-nowrap">Date Created</th>
+                  <th className="whitespace-nowrap">Status</th>
+                  <th className="whitespace-nowrap">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {currentTableData.map((el) => (
-                  <tr key={el.invoiceNo}>
+                {data.map((el) => (
+                  <tr key={el.id}>
                     <td>
                       <input
                         type="checkbox"
-                        checked={selected.has(el.invoiceNo)}
-                        onChange={(e) => onCheckHandler(e, el.invoiceNo)}
+                        checked={selected.has(el.id)}
+                        onChange={(e) => onCheckHandler(e, el.id)}
                       />
                     </td>
-                    <td>{el.invoiceNo}</td>
-                    <td>{el.customerName}</td>
-                    <td>{el.customerEmail}</td>
-                    <td>{currencyFormatter(el.amount, "NGN")}</td>
-                    <td>{format(new Date(el.dateSent), "dd MMM, yyyy")}</td>
-                    <td>{format(new Date(el.dueDate), "dd MMM, yyyy")}</td>
-                    <td>{el.status}</td>
-                    <td>
-                      <Button
-                        variant="secondary"
-                        type="submit"
-                        className="flex items-center gap-2 px-3 rounded-[0.75rem_!important]"
-                      >
-                        <FaEdit size={16} />
-                        <span className="tracking-wider">Edit</span>
-                      </Button>
+                    <td className="whitespace-nowrap">{el.id}</td>
+                    <td className="whitespace-nowrap w-max">{el.code}</td>
+                    <td className="whitespace-nowrap">
+                      <Stack>
+                        <Text>
+                          {el.customer.type === "individual"
+                            ? `${el.customer.firstName} ${el.customer.lastName}`
+                            : el.customer.name}
+                        </Text>
+                        <Text color={"gray"}>{el.customer.email}</Text>
+                      </Stack>
+                    </td>
+                    <td className="whitespace-nowrap min-w-[15rem] max-w-lg">
+                      {el.description}
+                    </td>
+                    <td className="whitespace-nowrap">
+                      {format(new Date(el.dueDate), "dd MMM, yyyy")}
+                    </td>
+                    <td className="whitespace-nowrap">
+                      {currencyFormatter(el.price, "NGN")}
+                    </td>
+                    <td className="whitespace-nowrap">
+                      {currencyFormatter(el.total, "NGN")}
+                    </td>
+                    <td className="whitespace-nowrap">
+                      {format(new Date(el.createdAt), "dd MMM, yyyy")}
+                    </td>
+                    <td className="whitespace-nowrap">{el.status}</td>
+                    <td className="whitespace-nowrap">
+                      <Flex gap="2">
+                        <Button
+                          variant="secondary"
+                          outline
+                          className="flex items-center gap-2 px-3 rounded-[0.75rem_!important]"
+                        >
+                          <span className="tracking-wider">View</span>
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          type="submit"
+                          className="flex items-center gap-2 px-3 rounded-[0.75rem_!important]"
+                        >
+                          <FaEdit size={16} />
+                          <span className="tracking-wider">Edit</span>
+                        </Button>
+                      </Flex>
                     </td>
                   </tr>
                 ))}
@@ -119,12 +197,17 @@ const Invoices = (): JSX.Element => {
             </DataTable>
             <div className="flex items-center justify-between px-5">
               <div>{pageInfo}</div>
-              <Pagination
-                className="pagination-bar"
+              <PaginationWrapper
+                handlePageChange={handlePageChange}
+                totalDataCount={pagination?.total}
                 currentPage={currentPage}
-                totalCount={data.length}
+                isDisabled={isDisabled}
+                pagesCount={pagesCount}
+                setCurrentPage={setCurrentPage}
+                offset={offset}
+                pages={pages}
+                setPageSize={setPageSize}
                 pageSize={pageSize}
-                onPageChange={(page: number) => setCurrentPage(page)}
               />
             </div>
           </div>
