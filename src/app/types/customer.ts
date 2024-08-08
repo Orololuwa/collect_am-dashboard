@@ -1,6 +1,6 @@
-export interface GetCustomerQueryParams {
-  page: number;
-  pageSize: number;
+import { PageQuery } from ".";
+
+export interface GetCustomerQueryParams extends PageQuery {
   email: string;
 }
 

@@ -3,3 +3,8 @@ export interface IGenericServicePayload<QP, B, PV> {
   body?: Partial<B>;
   pathVariables?: Partial<PV>;
 }
+
+export interface PageQuery {
+  page: number;
+  pageSize: number;
+}

@@ -1,6 +1,6 @@
-export interface GetProductsQueryParams {
-  page: number;
-  pageSize: number;
+import { PageQuery } from ".";
+
+export interface GetProductsQueryParams extends PageQuery {
   code: string;
 }
 
