@@ -12,9 +12,10 @@ import { IoTrashBinOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { usePagination } from "@ajna/pagination";
 import PaginationWrapper from "views/components/pagination/ajna-wrapper";
-import { Flex, Stack, Text } from "@chakra-ui/react";
+import { Flex, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { format } from "date-fns";
 import { currencyFormatter } from "app/utils";
+import CreateInvoice from "./drawers/new-invoice";
 
 const Invoices = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -98,6 +99,9 @@ const Invoices = (): JSX.Element => {
     dispatch(fetchInvoices({ page: currentPage, pageSize: pageSize }));
   }, [pageSize, currentPage, refreshCount]);
 
+  //
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <>
       <Helmet pageTitle="Invoices - Collectam" />
@@ -112,7 +116,7 @@ const Invoices = (): JSX.Element => {
                 />
               </div>
               <div className="flex items-center gap-5 px-5">
-                <Button>New Invoice</Button>
+                <Button onClick={onOpen}>New Invoice</Button>
                 <Link to="./batch">
                   <Button>Upload Batch</Button>
                 </Link>
@@ -215,6 +219,7 @@ const Invoices = (): JSX.Element => {
         {loading ? <Loading /> : null}
         {error ? <Err /> : null}
       </div>
+      <CreateInvoice isOpen={isOpen} onClose={onClose} />
     </>
   );
 };
