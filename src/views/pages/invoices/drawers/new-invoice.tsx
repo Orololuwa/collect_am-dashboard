@@ -23,6 +23,7 @@ import { AxiosError } from "axios";
 import { DEFAULT_ERROR_MESSAGE } from "data/config";
 import { updateCustomerSessionRefresh } from "data/store";
 import RhfSelect from "views/components/select/rhf-select";
+import { Trash, Additem } from "iconsax-react";
 
 // Yup schema
 const schema = yup.object().shape({
@@ -197,48 +198,51 @@ const CreateInvoice = ({
                   helperText={rhf.formState.errors?.description?.message}
                   placeholder="Invoice for purchase of office supplies"
                 />
+                <Stack direction="row" spacing="4" alignItems="center">
+                  <RhfInput
+                    type="number"
+                    name="tax"
+                    label="Tax"
+                    control={rhf.control}
+                    isInvalid={Boolean(rhf.formState.errors?.tax)}
+                    helperText={rhf.formState.errors?.tax?.message}
+                    placeholder="3"
+                  />
 
-                <RhfInput
-                  type="number"
-                  name="tax"
-                  label="Tax"
-                  control={rhf.control}
-                  isInvalid={Boolean(rhf.formState.errors?.tax)}
-                  helperText={rhf.formState.errors?.tax?.message}
-                  placeholder="3"
-                />
+                  <RhfInput
+                    type="number"
+                    name="serviceCharge"
+                    label="Service Charge"
+                    control={rhf.control}
+                    isInvalid={Boolean(rhf.formState.errors?.serviceCharge)}
+                    helperText={rhf.formState.errors?.serviceCharge?.message}
+                    placeholder="5"
+                  />
+                </Stack>
 
-                <RhfInput
-                  type="number"
-                  name="serviceCharge"
-                  label="Service Charge"
-                  control={rhf.control}
-                  isInvalid={Boolean(rhf.formState.errors?.serviceCharge)}
-                  helperText={rhf.formState.errors?.serviceCharge?.message}
-                  placeholder="5"
-                />
+                <Stack direction="row" spacing="4" alignItems="center">
+                  <RhfInput
+                    type="number"
+                    name="discount"
+                    label="Discount"
+                    control={rhf.control}
+                    isInvalid={Boolean(rhf.formState.errors?.discount)}
+                    helperText={rhf.formState.errors?.discount?.message}
+                    placeholder="10"
+                  />
 
-                <RhfInput
-                  type="number"
-                  name="discount"
-                  label="Discount"
-                  control={rhf.control}
-                  isInvalid={Boolean(rhf.formState.errors?.discount)}
-                  helperText={rhf.formState.errors?.discount?.message}
-                  placeholder="10"
-                />
-
-                <RhfSelect
-                  name="discountType"
-                  label="Discount Type"
-                  control={rhf.control}
-                  helperText={rhf.formState.errors?.discountType?.message}
-                  placeholder="Select discount type"
-                  options={[
-                    { value: "percentage", label: "Percentage" },
-                    { value: "fixed", label: "Fixed Amount" }
-                  ]}
-                />
+                  <RhfSelect
+                    name="discountType"
+                    label="Discount Type"
+                    control={rhf.control}
+                    helperText={rhf.formState.errors?.discountType?.message}
+                    placeholder="Select discount type"
+                    options={[
+                      { value: "percentage", label: "Percentage" },
+                      { value: "fixed", label: "Fixed Amount" }
+                    ]}
+                  />
+                </Stack>
 
                 {/* Customer ID Dropdown */}
                 <RhfSelect
@@ -293,44 +297,46 @@ const CreateInvoice = ({
                       }
                       placeholder="1"
                     />
-                    <Button
-                      variant="outline"
-                      colorScheme="red"
+                    <Trash
+                      color="red"
                       onClick={() => remove(index)}
+                      size={"50px"}
+                      className="mt-5"
                     >
                       Remove
-                    </Button>
+                    </Trash>
                   </Stack>
                 ))}
 
-                <Button
-                  variant="outline"
-                  colorScheme="blue"
+                <div
+                  className="flex items-center gap-2"
                   onClick={() => append({ quantityListed: 1, productId: 0 })}
                 >
-                  Add Product
-                </Button>
+                  <Additem />
+                  <span>Add Product</span>
+                </div>
               </Stack>
             </Stack>
           </DrawerBody>
 
-          <DrawerFooter>
-            <Button
-              colorScheme="red"
-              mr={3}
-              onClick={onClose}
-              variant={"outline"}
-            >
-              Close
-            </Button>{" "}
-            <Button
-              mt={4}
-              colorScheme="teal"
-              isLoading={loading}
-              onClick={rhf.handleSubmit(onSubmit)}
-            >
-              Create Invoice
-            </Button>
+          <DrawerFooter className="items-center">
+            <div className="flex items-center justify-end">
+              <Button
+                colorScheme="red"
+                mr={3}
+                onClick={onClose}
+                variant={"outline"}
+              >
+                Close
+              </Button>{" "}
+              <Button
+                colorScheme="teal"
+                isLoading={loading}
+                onClick={rhf.handleSubmit(onSubmit)}
+              >
+                Create Invoice
+              </Button>
+            </div>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>

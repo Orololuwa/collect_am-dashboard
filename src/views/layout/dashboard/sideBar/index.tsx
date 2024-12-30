@@ -32,7 +32,7 @@ const SideBar = (): JSX.Element => {
     >
       <div className="flex items-center top  py-4 px-10 ">
         <img
-          src={faker.image.avatar()}
+          src={faker.image.avatarGitHub()}
           alt="merchant"
           className="w-20 h-20 rounded-full avatar object-cover"
         />

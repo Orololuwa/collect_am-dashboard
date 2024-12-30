@@ -126,12 +126,12 @@ const Upload = ({
                 <Input
                   type="file"
                   display="none"
-                  id={uploadKey}
                   name="user-profile"
                   colorScheme="primary"
-                  accept="image/png, image/jpeg, application/pdf"
                   multiple
                   onChange={handleFileChange}
+                  accept="image/png, image/jpeg, application/pdf"
+                  id={uploadKey}
                   key={inputKey}
                 />
               </Center>
